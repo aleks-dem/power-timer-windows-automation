@@ -1,0 +1,6 @@
+# Auto-generated from requirements.txt
+# Regenerate: .\\scripts\\update_lockfiles.ps1
+psutil==5.9
+pillow==10.0
+pystray==0.19
+pywin32-ctypes==0.2.0

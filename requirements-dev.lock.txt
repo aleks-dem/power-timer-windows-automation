@@ -1,0 +1,3 @@
+# Auto-generated from requirements-dev.txt
+# Regenerate: .\\scripts\\update_lockfiles.ps1
+pyinstaller==6.0

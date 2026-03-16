@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.lock.txt
+          pip install -r requirements-dev.lock.txt
+
+      - name: Build EXE
+        run: pyinstaller --noconfirm --clean PowerTimer.spec
+
+      - name: Pack release artifacts
+        run: |
+          Compress-Archive -Path dist\PowerTimer\* -DestinationPath dist\PowerTimer-windows.zip -Force
+          $hash = (Get-FileHash dist\PowerTimer-windows.zip -Algorithm SHA256).Hash
+          "$hash  PowerTimer-windows.zip" | Set-Content dist\SHA256SUMS.txt -Encoding ascii
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PowerTimer-windows
+          path: |
+            dist/PowerTimer-windows.zip
+            dist/SHA256SUMS.txt
+
+      - name: Resolve release notes file
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $specific = "RELEASE_NOTES_$tag.md"
+          $fallback = "RELEASE_NOTES_TEMPLATE.md"
+          if (Test-Path $specific) {
+            "RELEASE_BODY_PATH=$specific" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          } elseif (Test-Path $fallback) {
+            "RELEASE_BODY_PATH=$fallback" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          } else {
+            throw "No release notes file found ($specific or $fallback)."
+          }
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: ${{ env.RELEASE_BODY_PATH }}
+          files: |
+            dist/PowerTimer-windows.zip
+            dist/SHA256SUMS.txt
