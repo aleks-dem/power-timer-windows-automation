@@ -30,5 +30,7 @@ Use this checklist before creating a public release.
 
 ## Publish
 
+- [ ] Actions token permissions allow release creation (`contents: write`)
+- [ ] If org policy restricts `GITHUB_TOKEN`, secret `RELEASE_PAT` is configured
 - [ ] GitHub Release published from tag
 - [ ] Quick post-release install/run sanity check completed
