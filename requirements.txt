@@ -1,4 +1,4 @@
 psutil>=5.9
-pillow>=10.0
+pillow>=10.3.0
 pystray>=0.19
 pywin32-ctypes>=0.2.0
