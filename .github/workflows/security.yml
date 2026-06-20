@@ -10,6 +10,8 @@ on:
 jobs:
   dependency-audit:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.lock.txt
           pip install -r requirements-dev.lock.txt
-          pip install pip-audit==2.7.3
+          pip install pip-audit==2.9.0
 
       - name: Run vulnerability audit
         run: |
@@ -33,6 +35,8 @@ jobs:
 
   static-security-scan:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
